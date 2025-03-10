@@ -1,13 +1,15 @@
 // src/App.js
 import React from "react";
 import { FaBookOpen, FaUserPlus } from "react-icons/fa"; // Importing book and user icons from react-icons
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
     <div
       className="relative w-full h-screen bg-cover bg-center"
       style={{
-        backgroundImage: 'url("https://images.unsplash.com/photo-1519681393784-d3d38f6f2966?fit=crop&w=500&h=500&q=80")', // Background image
+        backgroundImage:
+          'url("https://images.unsplash.com/photo-1519681393784-d3d38f6f2966?fit=crop&w=500&h=500&q=80")', // Background image
       }}
     >
       {/* <div className="absolute inset-0 bg-black opacity-40"></div> Dark overlay for text contrast */}
@@ -18,17 +20,17 @@ const Home = () => {
             Welcome to Bookify
           </h1>
           <p className="text-xl mb-6 max-w-lg mx-auto animate-fadeIn">
-            Your gateway to endless adventures. Discover, read, and explore books
-            from all genres. Find your next favorite read now.
+            Your gateway to endless adventures. Discover, read, and explore
+            books from all genres. Find your next favorite read now.
           </p>
           <div className="space-x-4 flex gap-3 items-center justify-center flex-wrap">
-            <a
-              href="#explore"
+            <Link
+              to="/books"
               className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-8 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"
             >
               <FaBookOpen className="inline-block mr-2 text-xl" />
               Explore Books
-            </a>
+            </Link>
             <a
               href="#signup"
               className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-black transition-all duration-300 ease-in-out transform hover:scale-105"
