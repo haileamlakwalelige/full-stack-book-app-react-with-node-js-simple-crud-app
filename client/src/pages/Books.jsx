@@ -79,7 +79,7 @@ const BookCard = ({ book }) => {
       </div>
       {book.cover && (
         <img
-          src={book.cover}
+          src={`http://localhost:3000${book.cover}`}
           alt={book.title}
           className="w-full h-64 object-cover rounded-md mb-4"
         />
