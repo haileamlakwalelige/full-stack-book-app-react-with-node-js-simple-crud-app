@@ -6,44 +6,66 @@ const Update = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [cover, setCover] = useState("");
+  const [cover, setCover] = useState(null); // Cover file
+  const [preview, setPreview] = useState(""); // Preview the uploaded image
+  const [existingCoverUrl, setExistingCoverUrl] = useState(""); // Store the current cover URL
 
   const navigate = useNavigate();
   const { id } = useParams();
 
+  // Fetch the book details when the component mounts
   useEffect(() => {
-    const FetchData = async () => {
+    const fetchData = async () => {
       try {
         const response = await axios.get(
           `http://localhost:3000/api/books/${id}`
         );
-        console.log("response data", response.data);
         if (response.data) {
           setTitle(response.data.title);
-          setDescription(response.data.description); // Corrected
-          setPrice(response.data.price); // Corrected
-          setCover(response.data.cover); // Corrected
+          setDescription(response.data.description);
+          setPrice(response.data.price);
+          setExistingCoverUrl(response.data.cover); // Save the existing cover URL
+          setPreview(response.data.cover); // Show the existing cover preview
         }
       } catch (error) {
         console.error("Error fetching book data:", error);
       }
     };
-    FetchData();
+    fetchData();
   }, [id]);
 
+  // Handle the file change for the cover image
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setCover(file);
+    setPreview(URL.createObjectURL(file)); // Show preview of the selected image
+  };
+
+  // Handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("price", price);
+
+    // If no new cover is selected, send the existing cover URL
+    if (cover) {
+      formData.append("cover", cover);
+    } else {
+      formData.append("cover", existingCoverUrl); // Existing cover from the backend
+    }
+
     try {
-      await axios.put(`http://localhost:3000/api/books/${id}`, {
-        title,
-        description,
-        cover,
-        price,
+      await axios.put(`http://localhost:3000/api/books/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
       navigate("/books");
     } catch (error) {
-      console.log(error);
+      console.error("Error updating book:", error.response?.data || error.message);
     }
   };
 
@@ -52,7 +74,7 @@ const Update = () => {
       <h1 className="text-4xl font-bold text-center text-blue-600 mb-12">
         Update Book
       </h1>
-      <form onSubmit={handleSubmit} className="space-y-6 ">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex justify-center gap-10 flex-wrap items-center">
           <div>
             <label className="block text-lg font-medium text-gray-100">
@@ -96,21 +118,28 @@ const Update = () => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-100">
-              Cover Image URL
+              Cover Image
             </label>
             <input
-              type="text"
-              value={cover}
-              onChange={(e) => setCover(e.target.value)}
+              type="file"
+              onChange={handleFileChange}
               name="cover"
               className="mt-2 w-full min-w-[350px] px-4 py-2 border border-gray-300 rounded-md"
+              accept="image/*"
             />
+            {preview && (
+              <img
+                src={preview}
+                alt="Cover Preview"
+                className="mt-2 w-40 h-40 object-cover rounded-md"
+              />
+            )}
           </div>
         </div>
         <div className="flex justify-center items-center">
           <button
             type="submit"
-            className="w-[300px] cursor-pointer bg-blue-500  text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+            className="w-[300px] cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
           >
             Update Book
           </button>
